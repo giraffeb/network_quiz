@@ -15,7 +15,7 @@
 #define maxBlocksInFile 6
 
 #define timeStampLength 256
-#define fileNameLength 256
+#define fileNameLength 1024
 
 #define userIdLength 256
 #define userPwLength 256

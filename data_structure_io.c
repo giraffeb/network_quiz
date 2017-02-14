@@ -113,8 +113,8 @@ int writeBlock(BlockInfo* thisBlock, char* buffer){
 	int writeAmount;
 
 	//BlockInfo print
-		printf("**block_index : %d\n", thisBlock->block_index);
-		printf("**write buffer : %s\n", buffer );
+	//	printf("**block_index : %d\n", thisBlock->block_index);
+	//	printf("**write buffer : %s\n", buffer );
 	//
 
 	writeAmount = writeBlockOnLinuxFile(thisBlock->file->file_name
@@ -130,6 +130,39 @@ int writeBlock(BlockInfo* thisBlock, char* buffer){
 
 	return writeAmount;
 };
+
+
+
+/*
+ *
+typedef struct physical_block_info{
+
+	struct physical_file_info *file; // 현재 이 물리 블록 정보가 소속되 있는 물리 파일을 가리키는 포인터가 필요하다 고 생각함.
+	//char file_name[fileNameLength]; //위 포인터를 못쓸때 필요했던 거고, 이제는 필요가 없어요 ㅎㅎㅎㅎㅎ
+
+	int block_index;
+	int start_point_in_block;//블록의 시작지점
+	int end_point_in_block;//블록의 끝지점
+
+	char create_time[timeStampLength];
+	char update_time[timeStampLength];
+
+}BlockInfo;
+ * */
+int printBlockInfo(BlockInfo* thisBlock){
+
+	printf("block_index : %d\n", thisBlock->block_index);
+	printf("start_point_in_block : %d\n", thisBlock->start_point_in_block);
+	printf("end_point_in_block : %d\n", thisBlock->end_point_in_block);
+
+	printf("create_time : %s\n", thisBlock->create_time);
+	printf("update_time : %s\n", thisBlock->update_time);
+
+
+	return 0;
+}
+
+
 
 //######BLOCKINFO API END ######
 
@@ -541,7 +574,8 @@ int copyFileToUserFile(UserInfo *thisUser, FileController* fileController, char 
 	flag = checkFileOpen(filePath);
 
 	if(flag <= 0 ){
-		printf("copy target file not exist\n");
+        printf(":%s:\n",filePath);
+		printf("%d copy target file not exist\n", flag);
 		return -1;
 	}
 
@@ -581,7 +615,7 @@ int copyFileToUserFile(UserInfo *thisUser, FileController* fileController, char 
 		readAmount = read(fd,readBuffer, blockSize-1); // --1은 null character 공간
 
 		printf("**readAmount : %d \n", readAmount);
-		printf("%s\n", readBuffer);
+		//printf("%s\n", readBuffer);
 
 		//while문 중단 조건
 		if(readAmount <= 0){
@@ -590,7 +624,7 @@ int copyFileToUserFile(UserInfo *thisUser, FileController* fileController, char 
 
 		newBlockNodeIndex = ++(newFileNode->last_block_index);
 		newBlockInfo = getBlockInfo(fileController);
-
+		//printBlockInfo(newBlockInfo);
 		//파일이 가질 수 있는 최대블록 개수 보다 작을때 수행.
 		//크면?  새로 만들어야 되는데 이건 물리적인 내용일때 해야하고
 		//omg
@@ -598,7 +632,7 @@ int copyFileToUserFile(UserInfo *thisUser, FileController* fileController, char 
 		//복사할 수 있는 파일의 크기를 제한하면 편하다.
 
 		if(newBlockNodeIndex < maxBlocksInFile){
-			printf("callw\n");
+			//printf("callw\n");
 			writeBlock(newBlockInfo, readBuffer);
 			//fileNode는 BlockNode 리스트를 갖습니다.
 			//BlockInfo -> BlockNode로 적절히 변환해서 넣어야 하죠.
@@ -615,6 +649,7 @@ int copyFileToUserFile(UserInfo *thisUser, FileController* fileController, char 
 
 		}
 		printf("loop\n");
+		//printBlockInfo(newBlockNode->thisBlock);
 	}
 	close(fd);
 	return 1;
@@ -677,7 +712,7 @@ BlockInfo* getBlockInfo(FileController *thisFileController){
 		printf("file exist\n");
 		lastFileInfo = thisFileController->file_list[fileIndex];
 
-			flag = checkAvailableBlockInLinuxFile(lastFileInfo);
+        flag = checkAvailableBlockInLinuxFile(lastFileInfo);
 	}else{
 		printf("file not exist\n");
 		flag = false;

@@ -15,6 +15,7 @@ int removeBlockInfo(BlockInfo *thisBlock);
 int checkLimitBlockSize(BlockInfo *thisBlock);
 int readBlock(BlockInfo* thisBlock, char* buffer);
 int writeBlock(BlockInfo* thisBlock, char* buffer);
+int printBlockInfo(BlockInfo* thisBlock);
 
 
 
